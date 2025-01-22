@@ -15,7 +15,6 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
-// Store rooms and their data in memory
 const rooms = new Map();
 
 io.on('connection', (socket) => {
@@ -46,12 +45,38 @@ io.on('connection', (socket) => {
     room.users.push({
       id: socket.id,
       name: username,
-      access: 'read'
+      access: 'read' 
     });
 
     socket.join(roomId);
     io.to(roomId).emit('room-info', room);
     socket.emit('text-update', room.text);
+  });
+
+  socket.on('typing', ({ roomId }) => {
+    const room = rooms.get(roomId);
+    if (!room) return;
+
+    const user = room.users.find(u => u.id === socket.id);
+    if (user) {
+      io.to(roomId).emit('user-typing', { 
+        userId: socket.id,
+        username: user.name
+      });
+    }
+  });
+
+  socket.on('stopped-typing', ({ roomId }) => {
+    const room = rooms.get(roomId);
+    if (!room) return;
+
+    const user = room.users.find(u => u.id === socket.id);
+    if (user) {
+      io.to(roomId).emit('user-stopped-typing', { 
+        userId: socket.id,
+        username: user.name
+      });
+    }
   });
 
   socket.on('update-text', ({ roomId, text }) => {
@@ -72,7 +97,7 @@ io.on('connection', (socket) => {
     const requestingUser = room.users.find(u => u.id === socket.id);
     if (requestingUser && requestingUser.access === 'owner') {
       const targetUser = room.users.find(u => u.id === userId);
-      if (targetUser) {
+      if (targetUser && targetUser.id !== room.owner) { 
         targetUser.access = access;
         io.to(roomId).emit('room-info', room);
       }
@@ -83,6 +108,12 @@ io.on('connection', (socket) => {
     rooms.forEach((room, roomId) => {
       const userIndex = room.users.findIndex(u => u.id === socket.id);
       if (userIndex !== -1) {
+        const user = room.users[userIndex];
+        io.to(roomId).emit('user-stopped-typing', { 
+          userId: socket.id,
+          username: user.name
+        });
+
         room.users.splice(userIndex, 1);
         if (room.users.length === 0) {
           rooms.delete(roomId);
