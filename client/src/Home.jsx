@@ -7,15 +7,39 @@ const Home = () => {
   const [roomId, setRoomId] = useState('');
   const navigate = useNavigate();
 
+  const generateRoomCode = () => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 4; i++) {
+      result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+  };
+
   const createRoom = () => {
-    if (!username) return;
-    const newRoomId = nanoid(10);
+    if (!username) {
+      alert('Please enter your name');
+      return;
+    }
+    const newRoomId = generateRoomCode();
     navigate(`/room/${newRoomId}`, { state: { username, isOwner: true } });
   };
 
   const joinRoom = () => {
-    if (!username || !roomId) return;
-    navigate(`/room/${roomId}`, { state: { username, isOwner: false } });
+    if (!username) {
+      alert('Please enter your name');
+      return;
+    }
+    if (!roomId) {
+      alert('Please enter a room code');
+      return;
+    }
+    navigate(`/room/${roomId.toUpperCase()}`, { state: { username, isOwner: false } });
+  };
+
+  const handleRoomIdChange = (e) => {
+    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
+    setRoomId(value);
   };
 
   return (
@@ -46,13 +70,19 @@ const Home = () => {
               <span className="px-4 bg-white text-gray-500">or join existing</span>
             </div>
           </div>
-          <input
-            type="text"
-            placeholder="Room Code"
-            className="w-full bg-gray-100 text-gray-800 placeholder-gray-500 border border-gray-300 rounded-full py-3 px-6 mb-6 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            value={roomId}
-            onChange={(e) => setRoomId(e.target.value)}
-          />
+          <div className="mb-6">
+            <input
+              type="text"
+              placeholder="Room Code (4 characters)"
+              className="w-full bg-gray-100 text-gray-800 placeholder-gray-500 border border-gray-300 rounded-full py-3 px-6 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-center uppercase tracking-widest"
+              value={roomId}
+              onChange={handleRoomIdChange}
+              maxLength={4}
+            />
+            <p className="text-sm text-gray-500 text-center mt-2">
+              Enter 4-character room code
+            </p>
+          </div>
           <button
             onClick={joinRoom}
             className="w-full bg-purple-600 text-white font-semibold rounded-full py-3 px-6 hover:bg-purple-700 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"

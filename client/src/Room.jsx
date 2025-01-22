@@ -5,6 +5,8 @@ import AceEditor from "react-ace"
 import "ace-builds/src-noconflict/mode-javascript"
 import "ace-builds/src-noconflict/theme-monokai"
 import { ClipboardCopy, Share2, Users, Shield } from "lucide-react"
+import JoinModal from "./JoinModel"
+
 
 const socket = io("http://localhost:5000")
 
@@ -18,11 +20,11 @@ const Room = () => {
   const [showUsers, setShowUsers] = useState(false)
   const [typingUsers, setTypingUsers] = useState(new Set())
   const typingTimeoutRef = useRef(null)
+  const [showJoinModal, setShowJoinModal] = useState(false)
 
   useEffect(() => {
     if (!location.state?.username) {
-      alert("Please enter a username")
-      navigate("/")
+      setShowJoinModal(true)
       return
     }
 
@@ -71,19 +73,24 @@ const Room = () => {
     }
   }, [roomId, location.state, navigate])
 
+  const handleJoinRoom = (username) => {
+    setShowJoinModal(false)
+    navigate(`/room/${roomId}`, { 
+      state: { username, isOwner: false },
+      replace: true 
+    })
+  }
+
   const handleTextChange = (newText) => {
     setText(newText)
     socket.emit("update-text", { roomId, text: newText })
     
-    // Handle typing indicator
     socket.emit("typing", { roomId })
-    
-    // Clear existing timeout
+  
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current)
     }
     
-    // Set new timeout
     typingTimeoutRef.current = setTimeout(() => {
       socket.emit("stopped-typing", { roomId })
     }, 1000)
@@ -112,6 +119,12 @@ const Room = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 text-white p-4">
+       {showJoinModal && (
+        <JoinModal 
+          onJoin={handleJoinRoom}
+          onClose={() => navigate('/')}
+        />
+      )}
       <div className="container mx-auto">
         <div className="flex justify-between items-center mb-4">
           <div>
