@@ -8,7 +8,7 @@ import { ClipboardCopy, Share2, Users, Shield } from "lucide-react"
 import JoinModal from "./JoinModel"
 
 
-const socket = io("http://localhost:5000")
+const socket = io("https://share-u.onrender.com")
 
 const Room = () => {
   const { roomId } = useParams()
