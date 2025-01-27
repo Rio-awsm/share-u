@@ -6,7 +6,7 @@ const {
   
   class GeminiHandler {
     constructor() {
-      this.apiKey = "";
+      this.apiKey = process.env.GENERATIVE_AI_API_KEY;
       this.genAI = new GoogleGenerativeAI(this.apiKey);
       this.chatSessions = new Map(); 
     }
