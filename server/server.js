@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
+const geminiHandler = require('./geminiHandler');
 
 const app = express();
 const server = http.createServer(app);
@@ -102,6 +103,30 @@ io.on('connection', (socket) => {
         targetUser.access = access;
         io.to(roomId).emit('room-info', room);
       }
+    }
+  });
+
+  socket.on('ai-prompt', async ({ roomId, prompt, username }) => {
+    const room = rooms.get(roomId);
+    if (!room) return;
+
+    const user = room.users.find(u => u.id === socket.id);
+    if (!user || (user.access !== 'edit' && user.access !== 'owner')) return;
+
+    try {
+      const aiResponse = await geminiHandler.getResponse(roomId, prompt);
+      
+    
+      const timestamp = new Date().toLocaleTimeString();
+      const formattedPrompt = `\n[${timestamp}] ${username}: ${prompt}\n`;
+      const formattedResponse = `[${timestamp}] AI Assistant: ${aiResponse}\n`;
+      
+      room.text = room.text + formattedPrompt + formattedResponse;
+      
+    
+      io.to(roomId).emit('text-update', room.text);
+    } catch (error) {
+      socket.emit('error', 'Failed to get AI response');
     }
   });
 

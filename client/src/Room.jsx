@@ -4,11 +4,11 @@ import { io } from "socket.io-client"
 import AceEditor from "react-ace"
 import "ace-builds/src-noconflict/mode-javascript"
 import "ace-builds/src-noconflict/theme-monokai"
-import { ClipboardCopy, Share2, Users, Shield } from "lucide-react"
+import { ClipboardCopy, Share2, Users, Shield, Loader } from "lucide-react"
 import JoinModal from "./JoinModel"
 
 
-const socket = io("https://share-u.onrender.com")
+const socket = io("http://localhost:5000/")
 
 const Room = () => {
   const { roomId } = useParams()
@@ -21,6 +21,9 @@ const Room = () => {
   const [typingUsers, setTypingUsers] = useState(new Set())
   const typingTimeoutRef = useRef(null)
   const [showJoinModal, setShowJoinModal] = useState(false)
+  const [aiPrompt, setAiPrompt] = useState("")
+  const [showAiPrompt, setShowAiPrompt] = useState(true)
+  const [isAiGenerating, setIsAiGenerating] = useState(false)
 
   useEffect(() => {
     if (!location.state?.username) {
@@ -81,6 +84,39 @@ const Room = () => {
     })
   }
 
+  const handleAiPrompt = () => {
+    if (!aiPrompt.trim()) return;
+
+    setIsAiGenerating(true)
+    
+    socket.emit('ai-prompt', {
+      roomId,
+      prompt: aiPrompt.trim(),
+      username: location.state?.username
+    });
+    
+    setAiPrompt('');
+  };
+
+  useEffect(() => {
+    
+    socket.on("text-update", (newText) => {
+      setText(newText)
+      setIsAiGenerating(false) 
+    })
+
+    socket.on("error", (error) => {
+      alert(error)
+      setIsAiGenerating(false) 
+      navigate("/")
+    })
+
+    return () => {
+      socket.off("text-update")
+      socket.off("error")
+    }
+  }, [navigate])
+
   const handleTextChange = (newText) => {
     setText(newText)
     socket.emit("update-text", { roomId, text: newText })
@@ -116,6 +152,7 @@ const Room = () => {
 
   const currentUser = users.find(u => u.id === socket.id)
   const canEdit = currentUser?.access === "edit" || currentUser?.access === "owner"
+  const canUseAI = isAdmin || canEdit
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 text-white p-4">
@@ -192,6 +229,48 @@ const Room = () => {
                 </span>
               )}
             </div>
+
+            {showAiPrompt && canUseAI && (
+              <div className="bg-gray-900 p-4">
+                <div className="flex flex-col space-y-2">
+                  {isAiGenerating && (
+                    <div className="flex items-center space-x-2 text-sm text-gray-400 mb-2">
+                      <Loader className="w-4 h-4 animate-spin" />
+                      <span>AI is generating response...</span>
+                    </div>
+                  )}
+                  <div className="flex space-x-2">
+                    <input
+                      type="text"
+                      value={aiPrompt}
+                      onChange={(e) => setAiPrompt(e.target.value)}
+                      placeholder="Ask the AI assistant..."
+                      disabled={isAiGenerating}
+                      className={`flex-1 px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                        isAiGenerating ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                      onKeyDown={(e) => e.key === 'Enter' && !isAiGenerating && handleAiPrompt()}
+                    />
+                    <button
+                      onClick={handleAiPrompt}
+                      disabled={isAiGenerating}
+                      className={`bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-lg transition duration-300 ease-in-out flex items-center space-x-2 ${
+                        isAiGenerating ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                    >
+                      {isAiGenerating ? (
+                        <>
+                          <Loader className="animate-spin" size={18} />
+                          <span>Generating...</span>
+                        </>
+                      ) : (
+                        <span>Send</span>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {showUsers && (
