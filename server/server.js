@@ -20,6 +20,7 @@ app.use(express.json());
 
 const rooms = new Map();
 const polls = new Map();
+const chatHistory = new Map();
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
@@ -65,6 +66,9 @@ io.on("connection", (socket) => {
       );
       socket.emit("active-polls", activePolls);
     }
+
+    const roomChatHistory = chatHistory.get(roomId) || [];
+    socket.emit("chat-history", roomChatHistory);
   });
 
   socket.on("typing", ({ roomId }) => {
@@ -161,6 +165,9 @@ io.on("connection", (socket) => {
           io.to(roomId).emit("room-info", room);
         }
       }
+      if (room.users.length === 0) {
+        chatHistory.delete(roomId);
+      }
     });
   });
 
@@ -231,6 +238,21 @@ io.on("connection", (socket) => {
 
     poll.active = false;
     io.to(roomId).emit("poll-closed", poll);
+  });
+
+  socket.on("send-message", ({ roomId, username, text, timestamp }) => {
+    const message = { username, text, timestamp };
+
+    if (!chatHistory.has(roomId)) {
+      chatHistory.set(roomId, []);
+    }
+    chatHistory.get(roomId).push(message);
+
+    if (chatHistory.get(roomId).length > 100) {
+      chatHistory.get(roomId).shift();
+    }
+
+    io.to(roomId).emit("chat-message", message);
   });
 });
 

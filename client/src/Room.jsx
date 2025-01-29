@@ -4,10 +4,11 @@ import { io } from "socket.io-client";
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/theme-monokai";
-import { ClipboardCopy, Share2, Users, Shield, Loader } from "lucide-react";
+import { ClipboardCopy, Share2, Users, Shield, Loader, MessageCircle } from "lucide-react";
 import JoinModal from "./JoinModel";
 import { ActivePoll } from "./ActivePoll";
 import { PollCreator } from "./PollCreator";
+import Chat from "./Chat";
 
 const socket = io("http://localhost:5000/");
 
@@ -27,6 +28,7 @@ const Room = () => {
   const [isAiGenerating, setIsAiGenerating] = useState(false);
   const [showPollCreator, setShowPollCreator] = useState(false);
   const [activePolls, setActivePolls] = useState([]);
+  const [showChat, setShowChat] = useState(false);
 
   useEffect(() => {
     if (!location.state?.username) {
@@ -224,6 +226,13 @@ const Room = () => {
             >
               Create Poll
             </button>
+            <button
+              onClick={() => setShowChat(!showChat)}
+              className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-full transition duration-300 ease-in-out flex items-center"
+            >
+              <MessageCircle className="mr-2" size={18} />
+              {showChat ? "Hide" : "Show"} Chat
+            </button>
           </div>
         </div>
 
@@ -349,23 +358,32 @@ const Room = () => {
             </div>
           )}
 
-          { showPollCreator && (
-          <PollCreator
+          {showPollCreator && (
+            <PollCreator
+              socket={socket}
+              roomId={roomId}
+              onClose={() => setShowPollCreator(false)}
+            />
+          )}
+          {activePolls.map((poll) => (
+            <ActivePoll
+              key={poll.id}
+              poll={poll}
+              socket={socket}
+              roomId={roomId}
+              currentUserId={socket.id}
+            />
+          ))}
+        </div>
+        {location.state?.username && (
+          <Chat
             socket={socket}
             roomId={roomId}
-            onClose={() => setShowPollCreator(false)}
+            username={location.state.username}
+            showChat={showChat}
+            setShowChat={setShowChat}
           />
         )}
-        {activePolls.map((poll) => (
-          <ActivePoll
-            key={poll.id}
-            poll={poll}
-            socket={socket}
-            roomId={roomId}
-            currentUserId={socket.id}
-          />
-        ))}
-        </div>
       </div>
     </div>
   );
