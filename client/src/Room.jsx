@@ -18,7 +18,7 @@ import { PollCreator } from "./PollCreator";
 import Chat from "./Chat";
 import { VideoChat } from "./VideoChat";
 
-const socket = io("http://localhost:5000/");
+const socket = io("https://share-u.onrender.com/");
 
 const Room = () => {
   const { roomId } = useParams();
