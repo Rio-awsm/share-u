@@ -14,6 +14,7 @@ const {
     async initializeChat(roomId) {
       const model = this.genAI.getGenerativeModel({
         model: "gemini-2.0-flash-exp",
+        systemInstruction: "You are an ai assistant who is available in a realtime collaborative platform where people can come and join room. You can help them with their queries specially generating code but don't explain or comment too much."
       });
   
       const generationConfig = {
@@ -26,20 +27,7 @@ const {
   
       const chatSession = model.startChat({
         generationConfig,
-        history: [
-          {
-            role: "user",
-            parts: [
-              { text: "you are an ai assistant available in a realtime text sharing platform whenever an user ping you and give you some command you will help him with the suitable response" },
-            ],
-          },
-          {
-            role: "model",
-            parts: [
-              { text: "I understand. I'm ready to help as an AI assistant in this text sharing platform. Just ping me with your questions or commands!" },
-            ],
-          }
-        ],
+        history: [],
       });
   
       this.chatSessions.set(roomId, chatSession);
