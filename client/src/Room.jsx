@@ -4,11 +4,19 @@ import { io } from "socket.io-client";
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/theme-monokai";
-import { ClipboardCopy, Share2, Users, Shield, Loader, MessageCircle } from "lucide-react";
+import {
+  ClipboardCopy,
+  Share2,
+  Users,
+  Shield,
+  Loader,
+  MessageCircle,
+} from "lucide-react";
 import JoinModal from "./JoinModel";
 import { ActivePoll } from "./ActivePoll";
 import { PollCreator } from "./PollCreator";
 import Chat from "./Chat";
+import { VideoChat } from "./VideoChat";
 
 const socket = io("http://localhost:5000/");
 
@@ -319,6 +327,14 @@ const Room = () => {
                 </div>
               </div>
             )}
+            {location.state?.username && (
+        <VideoChat
+          socket={socket}
+          roomId={roomId}
+          username={location.state.username}
+          canEdit={canEdit}
+        />
+      )}
           </div>
 
           {showUsers && (
@@ -357,7 +373,6 @@ const Room = () => {
               </ul>
             </div>
           )}
-
           {showPollCreator && (
             <PollCreator
               socket={socket}

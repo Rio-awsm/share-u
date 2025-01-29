@@ -164,6 +164,7 @@ io.on("connection", (socket) => {
           }
           io.to(roomId).emit("room-info", room);
         }
+        io.to(roomId).emit("video-user-left", { userId: socket.id });
       }
       if (room.users.length === 0) {
         chatHistory.delete(roomId);
@@ -253,6 +254,36 @@ io.on("connection", (socket) => {
     }
 
     io.to(roomId).emit("chat-message", message);
+  });
+
+  socket.on("video-join", ({ roomId }) => {
+    const room = rooms.get(roomId);
+    if (!room) return;
+
+    const user = room.users.find((u) => u.id === socket.id);
+    if (!user || (user.access !== "edit" && user.access !== "owner")) return;
+    room.users
+      .filter(
+        (u) =>
+          u.id !== socket.id && (u.access === "edit" || u.access === "owner")
+      )
+      .forEach((u) => {
+        io.to(u.id).emit("video-user-joined", { userId: socket.id });
+      });
+  });
+
+  socket.on("video-offer", ({ roomId, offer, toUserId }) => {
+    io.to(toUserId).emit("video-offer", {
+      fromUserId: socket.id,
+      offer,
+    });
+  });
+
+  socket.on("video-answer", ({ roomId, answer, toUserId }) => {
+    io.to(toUserId).emit("video-answer", {
+      fromUserId: socket.id,
+      answer,
+    });
   });
 });
 
