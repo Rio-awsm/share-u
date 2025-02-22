@@ -201,11 +201,29 @@ const Room = () => {
     currentUser?.access === "edit" || currentUser?.access === "owner";
   const canUseAI = isAdmin || canEdit;
 
+  const [activeOption, setActiveOption] = useState(null);
+const toggleOption = (option) => {
+  setActiveOption(activeOption === option ? null : option);
+  if (option === "users") {
+    setShowUsers(activeOption !== "users");
+    setShowPollCreator(false);
+    setShowChat(false);
+  } else if (option === "poll") {
+    setShowPollCreator(activeOption !== "poll");
+    setShowUsers(false);
+    setShowChat(false);
+  } else if (option === "chat") {
+    setShowChat(activeOption !== "chat");
+    setShowUsers(false);
+    setShowPollCreator(false);
+  }
+};
+  
   return (
     <section>
       
     <BackgroundBeams/>
-    <div className="min-h-screen z-10 bg-black justify-center text-white p-4">
+    <div className=" z-10 bg-black justify-center text-white p-4">
       {showJoinModal && (
         <JoinModal onJoin={handleJoinRoom} onClose={() => navigate("/")} />
       )}
@@ -213,9 +231,9 @@ const Room = () => {
         <div className="my-4">
         <img src={logo} alt="" />
         </div>
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between ml-[5%] items-center ">
           <div>
-            <h1 className="text-3xl font-bold">Share U - Room: {roomId}</h1>
+            <h1 className="lg:text-6xl text-4xl font-black leading-8 ">Room - {roomId}</h1>
             {typingUsers.size > 0 && (
               <div className="text-sm mt-2 text-gray-200">
                 {Array.from(typingUsers).join(", ")}{" "}
@@ -223,19 +241,12 @@ const Room = () => {
               </div>
             )}
           </div>
-
-
-         
-
-
-
-
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 px-[5%] py-4  justify-center">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 px-[5%] pt-2 justify-center">
   {/* Code Editor Section */}
   <div className="lg:col-span-3 z-20 lg:w-[983px]  rounded-lg shadow-xl overflow-hidden">
-    <div className="relative flex flex-col lg:flex-row lg:pt-16 pt-12">
+    <div className="relative lg:-mt-[5%] flex flex-col lg:flex-row lg:pt-16 pt-12">
       <AceEditor
         mode="javascript"
         theme="tomorrow_night_blue"
@@ -244,7 +255,7 @@ const Room = () => {
         name="code-editor"
         editorProps={{ $blockScrolling: true }}
         width="100%"
-        height="calc(90vh - 200px)"
+        height="500px"
         fontSize={16}
         showPrintMargin={false}
         showGutter={true}
@@ -359,50 +370,54 @@ const Room = () => {
 
       </div>
     </div>
-    <div className="bg-black lg:pb-8 py-4 ">
+    <div className="bg-black lg:pb-8 py- ">
       {/* NAVBAR */}
-      <div className="sticky border w-fit mx-auto  transform  bg-black p-2 rounded-full shadow-lg">
-  <div className="flex items-center justify-center space-x-1">
-    <button
-      onClick={copyRoomLink}
-      className="px-6 py-3 rounded-full text-gray-300 hover:text-white transition-colors duration-200 flex items-center gap-2 hover:bg-white/10"
-    >
-      <Share2 size={18} />
-      <span>Room</span>
-    </button>
+      <div className="sticky border w-fit mx-auto transform bg-black p-2 rounded-full shadow-lg">
+        <div className="flex items-center justify-center space-x-1">
+          <button
+            onClick={() => copyRoomLink()}
+            className="px-6 py-3 rounded-full text-gray-300 hover:text-white transition-colors duration-200 flex items-center gap-2 hover:bg-white/10"
+          >
+            <Share2 size={18} />
+            <span>Room</span>
+          </button>
 
-    <button
-      onClick={() => setShowUsers(!showUsers)}
-      className={`px-6 py-3 rounded-full transition-colors duration-200 flex  items-center gap-2 ${
-        showUsers ? "bg-white/20 text-white" : "text-gray-300 hover:text-white hover:bg-white/10"
-      }`}
-    >
-      <Users size={18} />
-      <span>Users</span>
-    </button>
+          <button
+            onClick={() => toggleOption("users")}
+            className={`px-6 py-3 rounded-full transition-colors duration-200 flex items-center gap-2 ${
+              activeOption === "users" ? "bg-white/20 text-white" : "text-gray-300 hover:text-white hover:bg-white/10"
+            }`}
+          >
+            <Users size={18} />
+            <span>Users</span>
+          </button>
 
-    <button
-      onClick={() => setShowPollCreator(true)}
-      className="px-6 py-3 rounded-full text-gray-300 hover:text-white transition-colors duration-200 flex items-center gap-2 hover:bg-white/10"
-    >
-      <BarChart size={18} />
-      <span>Poll</span>
-    </button>
+          <button
+            onClick={() => toggleOption("poll")}
+            className={`px-6 py-3 rounded-full transition-colors duration-200 flex items-center gap-2 ${
+              activeOption === "poll" ? "bg-white/20 text-white" : "text-gray-300 hover:text-white hover:bg-white/10"
+            }`}
+          >
+            <BarChart size={18} />
+            <span>Poll</span>
+          </button>
 
-    <button
-      onClick={() => setShowChat(!showChat)}
-      className={`px-6 py-3 rounded-full transition-colors duration-200 flex items-center gap-2 ${
-        showChat ? "bg-white/20 text-white" : "text-gray-300 hover:text-white hover:bg-white/10"
-      }`}
-    >
-      <MessageCircle size={18} />
-      <span>Chat</span>
-    </button>
-  </div>
-</div>
+          <button
+            onClick={() => toggleOption("chat")}
+            className={`px-6 py-3 rounded-full transition-colors duration-200 flex items-center gap-2 ${
+              activeOption === "chat" ? "bg-white/20 text-white" : "text-gray-300 hover:text-white hover:bg-white/10"
+            }`}
+          >
+            <MessageCircle size={18} />
+            <span>Chat</span>
+          </button>
+        </div>
+      </div>
     </div>
     </section>
   );
 };
 
 export default Room;
+
+

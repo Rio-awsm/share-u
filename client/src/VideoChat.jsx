@@ -251,7 +251,7 @@ export const VideoChat = ({ socket, roomId, username, canEdit }) => {
   }
 
   return (
-    <div className=" relative rounded-xl  w-[402px] h-[238px] flex items-center justify-between">
+    <div className=" relative rounded-xl lg:mt-[2%] w-[402px] h-[238px] flex items-center justify-between">
     {/* Video Container (50%) */}
     <div className="w-full h-full flex items-center justify-center relative">
       <video
