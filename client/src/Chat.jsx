@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, Send } from 'lucide-react';
+import { Send } from 'lucide-react';
 
 export const Chat = ({ socket, roomId, username, showChat, setShowChat }) => {
   const [messages, setMessages] = useState([]);
@@ -45,58 +45,41 @@ export const Chat = ({ socket, roomId, username, showChat, setShowChat }) => {
   };
 
   return (
-    <div className={`fixed right-4 bottom-4 w-80 bg-white rounded-lg shadow-xl ${showChat ? 'block' : 'hidden'}`}>
-      <div className="bg-purple-600 text-white p-3 rounded-t-lg flex justify-between items-center">
-        <h3 className="font-semibold flex items-center">
-          <MessageCircle className="mr-2" size={18} />
-          Chat
-        </h3>
-        <button onClick={() => setShowChat(false)} className="text-white hover:text-gray-200">
-          ×
-        </button>
-      </div>
-      
-      <div className="h-96 overflow-y-auto p-4 bg-gray-50">
+    <div className={`w-[402px]  bg-black text-white rounded-[32px] shadow-lg border-8 border-[#5E5A5A] ${showChat ? 'block' : 'hidden'}`}>
+      <div className="h-96 overflow-y-auto mt-2 p-4">
         {messages.map((message, index) => (
           <div
             key={index}
-            className={`mb-4 ${message.username === username ? 'text-right' : ''}`}
+            className={`mb-4 ${message.username === username ? 'text-right' : 'text-left'}`}
           >
             <div
-              className={`inline-block max-w-xs rounded-lg p-3 ${
+              className={`inline-block max-w-[80%] rounded-2xl p-3 ${
                 message.username === username
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-200 text-gray-800'
+                  ? "bg-[#5E5A5A] text-white" : "bg-[#222222] text-gray-300"
               }`}
             >
               <p className="text-xs font-semibold mb-1">{message.username}</p>
               <p className="text-sm">{message.text}</p>
-              <p className="text-xs mt-1 opacity-75">
-                {new Date(message.timestamp).toLocaleTimeString()}
-              </p>
             </div>
           </div>
         ))}
         <div ref={messagesEndRef} />
       </div>
 
-      <form onSubmit={sendMessage} className="p-3 border-t">
-        <div className="flex gap-2">
+      <div className="p-2 border-t-8 bg-[#5E5A5A] border-[#5E5A5A] rounded-b-[10px]">
+        <form onSubmit={sendMessage} className="flex items-center gap-2">
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type a message..."
-            className="flex-1 px-3 py-2 rounded-lg border text-black focus:outline-none focus:ring-2 focus:ring-purple-500"
+            placeholder="Text here...."
+            className="flex-1 px-4 py-3 border rounded-full bg-black text-white placeholder-gray-500 focus:outline-none"
           />
-          <button
-            type="submit"
-            className="bg-purple-600 text-white p-2 rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            <Send size={18} />
+          <button type="submit" className="bg-black border text-white p-3 rounded-full hover:bg-[#5E5A5A] transition-colors">
+            <Send size={20} />
           </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };

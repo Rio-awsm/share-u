@@ -3,7 +3,8 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-javascript";
-import "ace-builds/src-noconflict/theme-monokai";
+import "ace-builds/src-noconflict/theme-tomorrow_night_blue";
+import logo from "/logo.svg"
 import {
   ClipboardCopy,
   Share2,
@@ -17,6 +18,8 @@ import { ActivePoll } from "./ActivePoll";
 import { PollCreator } from "./PollCreator";
 import Chat from "./Chat";
 import { VideoChat } from "./VideoChat";
+import GenerateButton from "./components/GenerateButton";
+import Copy from "./components/Copy";
 
 const socket = io("https://share-u.onrender.com/");
 
@@ -197,11 +200,14 @@ const Room = () => {
   const canUseAI = isAdmin || canEdit;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 text-white p-4">
+    <div className="min-h-screen bg-black justify-center text-white p-4">
       {showJoinModal && (
         <JoinModal onJoin={handleJoinRoom} onClose={() => navigate("/")} />
       )}
       <div className="container mx-auto">
+        <div className="my-4">
+        <img src={logo} alt="" />
+        </div>
         <div className="flex justify-between items-center mb-4">
           <div>
             <h1 className="text-3xl font-bold">Share U - Room: {roomId}</h1>
@@ -213,6 +219,7 @@ const Room = () => {
             )}
           </div>
           <div className="flex space-x-2">
+            
             <button
               onClick={copyRoomLink}
               className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition duration-300 ease-in-out flex items-center"
@@ -244,161 +251,131 @@ const Room = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-          <div className="lg:col-span-3 bg-gray-800 rounded-lg shadow-xl overflow-hidden">
-            <AceEditor
-              mode="javascript"
-              theme="monokai"
-              onChange={handleTextChange}
-              value={text}
-              name="code-editor"
-              editorProps={{ $blockScrolling: true }}
-              width="100%"
-              height="calc(100vh - 200px)"
-              fontSize={16}
-              showPrintMargin={false}
-              showGutter={true}
-              highlightActiveLine={true}
-              readOnly={!canEdit}
-              setOptions={{
-                enableBasicAutocompletion: true,
-                enableLiveAutocompletion: true,
-                enableSnippets: true,
-                showLineNumbers: true,
-                tabSize: 2,
-              }}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 px-[5%] py-4  justify-center">
+  {/* Code Editor Section */}
+  <div className="lg:col-span-3 bg-gray-900 lg:w-[983px]  rounded-lg shadow-xl overflow-hidden">
+    <div className="relative flex flex-col lg:flex-row lg:pt-16 pt-12">
+      <AceEditor
+        mode="javascript"
+        theme="tomorrow_night_blue"
+        onChange={handleTextChange}
+        value={text}
+        name="code-editor"
+        editorProps={{ $blockScrolling: true }}
+        width="100%"
+        height="calc(90vh - 200px)"
+        fontSize={16}
+        showPrintMargin={false}
+        showGutter={true}
+        highlightActiveLine={true}
+        readOnly={!canEdit}
+        setOptions={{
+          enableBasicAutocompletion: true,
+          enableLiveAutocompletion: true,
+          enableSnippets: true,
+          showLineNumbers: true,
+          tabSize: 2,
+        }}
+      />
+
+      <div className="absolute lg:top-12 top-0 lg:right-10 right-2 flex justify-between items-center">
+        <button
+          onClick={copyToClipboard}
+          className="text-white px-4 py-2 rounded-full transition duration-300 ease-in-out flex items-center"
+        >
+          <Copy />
+        </button>
+        {!canEdit && (
+          <span className="text-yellow-400 flex items-center">
+            <Shield className="mr-2" size={18} />
+          </span>
+        )}
+      </div>
+    </div>
+
+    {showAiPrompt && canUseAI && (
+      <div className="bg-black py-4">
+        <div className="flex flex-col space-y-2">
+          {isAiGenerating && (
+            <div className="flex items-center space-x-2 text-sm text-gray-400 mb-2">
+              <Loader className="w-4 h-4 animate-spin" />
+              <span>AI is generating response...</span>
+            </div>
+          )}
+          <div className="flex space-x-2">
+            <input
+              type="text"
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              placeholder="Ask the AI assistant..."
+              disabled={isAiGenerating}
+              className="flex-1 px-4 py-2 rounded-xl bg-black text-white border border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              onKeyDown={(e) => e.key === "Enter" && !isAiGenerating && handleAiPrompt()}
             />
-            <div className="bg-gray-700 p-4 flex justify-between items-center">
-              <button
-                onClick={copyToClipboard}
-                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full transition duration-300 ease-in-out flex items-center"
-              >
-                <ClipboardCopy className="mr-2" size={18} />
-                {copied ? "Copied!" : "Copy Text"}
-              </button>
-              {!canEdit && (
-                <span className="text-yellow-400 flex items-center">
-                  <Shield className="mr-2" size={18} />
-                  Read-only mode
+            <button
+              onClick={handleAiPrompt}
+              disabled={isAiGenerating}
+              className="text-white pl-2  rounded-3xl transition duration-300 ease-in-out flex items-center space-x-2"
+            >
+              {isAiGenerating ? (
+                <>
+                  <Loader className="animate-spin" size={18} />
+                  <span>Generating...</span>
+                </>
+              ) : (
+                <span>
+                  <GenerateButton/>
                 </span>
               )}
-            </div>
-
-            {showAiPrompt && canUseAI && (
-              <div className="bg-gray-900 p-4">
-                <div className="flex flex-col space-y-2">
-                  {isAiGenerating && (
-                    <div className="flex items-center space-x-2 text-sm text-gray-400 mb-2">
-                      <Loader className="w-4 h-4 animate-spin" />
-                      <span>AI is generating response...</span>
-                    </div>
-                  )}
-                  <div className="flex space-x-2">
-                    <input
-                      type="text"
-                      value={aiPrompt}
-                      onChange={(e) => setAiPrompt(e.target.value)}
-                      placeholder="Ask the AI assistant..."
-                      disabled={isAiGenerating}
-                      className={`flex-1 px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-                        isAiGenerating ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
-                      onKeyDown={(e) =>
-                        e.key === "Enter" && !isAiGenerating && handleAiPrompt()
-                      }
-                    />
-                    <button
-                      onClick={handleAiPrompt}
-                      disabled={isAiGenerating}
-                      className={`bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-lg transition duration-300 ease-in-out flex items-center space-x-2 ${
-                        isAiGenerating ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
-                    >
-                      {isAiGenerating ? (
-                        <>
-                          <Loader className="animate-spin" size={18} />
-                          <span>Generating...</span>
-                        </>
-                      ) : (
-                        <span>Send</span>
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-            {location.state?.username && (
-        <VideoChat
-          socket={socket}
-          roomId={roomId}
-          username={location.state.username}
-          canEdit={canEdit}
-        />
-      )}
+            </button>
           </div>
-
-          {showUsers && (
-            <div className="bg-white text-gray-800 p-4 rounded-lg shadow-xl">
-              <h2 className="text-xl font-bold mb-4">Users</h2>
-              <ul className="space-y-2">
-                {users.map((user) => (
-                  <li key={user.id} className="bg-gray-100 rounded-lg p-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <span className="font-medium">{user.name}</span>
-                        {user.access === "owner" && (
-                          <Shield className="ml-2 text-purple-600" size={16} />
-                        )}
-                      </div>
-                      {isAdmin && user.id !== socket.id && (
-                        <select
-                          value={user.access}
-                          onChange={(e) =>
-                            updateUserAccess(user.id, e.target.value)
-                          }
-                          className="ml-2 p-1 border rounded-md bg-white"
-                        >
-                          <option value="read">Read</option>
-                          <option value="edit">Edit</option>
-                        </select>
-                      )}
-                      {!isAdmin && (
-                        <span className="text-sm text-gray-600">
-                          {user.access === "owner" ? "Admin" : user.access}
-                        </span>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {showPollCreator && (
-            <PollCreator
-              socket={socket}
-              roomId={roomId}
-              onClose={() => setShowPollCreator(false)}
-            />
-          )}
-          {activePolls.map((poll) => (
-            <ActivePoll
-              key={poll.id}
-              poll={poll}
-              socket={socket}
-              roomId={roomId}
-              currentUserId={socket.id}
-            />
-          ))}
         </div>
-        {location.state?.username && (
-          <Chat
-            socket={socket}
-            roomId={roomId}
-            username={location.state.username}
-            showChat={showChat}
-            setShowChat={setShowChat}
-          />
-        )}
+      </div>
+    )}
+  </div>
+
+  {/* Side Panel */}
+  {location.state?.username && (
+    <div className="  flex flex-col items-center space-y-4">
+      <VideoChat socket={socket} roomId={roomId} username={location.state.username} canEdit={canEdit} />
+      {showUsers && (
+        <div className="bg-black rounded-[32px] shadow-lg border-8 border-[#5E5A5A] w-[402px] text-gray-400 p-4 ">
+          <h2 className="text-xl p-4  text-center uppercase rounded-[32px] shadow-lg border-8 border-[#5E5A5A] font-bold  mb-4">Users</h2>
+          <ul className="space-y-2">
+            {users.map((user) => (
+              <li key={user.id} className="bg-gray-800 rounded-lg p-3 flex justify-between items-center">
+                <span className="font-medium">{user.name}</span>
+                {user.access === "owner" && <Shield className="text-purple-600" size={16} />}
+                {isAdmin && user.id !== socket.id ? (
+                  <select
+                    value={user.access}
+                    onChange={(e) => updateUserAccess(user.id, e.target.value)}
+                    className="p-1 border rounded-md bg-white"
+                  >
+                    <option value="read">Read</option>
+                    <option value="edit">Edit</option>
+                  </select>
+                ) : (
+                  <span className="text-sm text-gray-600">{user.access === "owner" ? "Admin" : user.access}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {showPollCreator && <PollCreator socket={socket} roomId={roomId} onClose={() => setShowPollCreator(false)} />}
+      {activePolls.map((poll) => (
+        <ActivePoll key={poll.id} poll={poll} socket={socket} roomId={roomId} currentUserId={socket.id} />
+      ))}
+      {location.state?.username && (
+        <Chat socket={socket} roomId={roomId} username={location.state.username} showChat={showChat} setShowChat={setShowChat} />
+      )}
+    </div>
+  )}
+</div>
+
+
+
       </div>
     </div>
   );

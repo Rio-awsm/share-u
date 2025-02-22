@@ -8,11 +8,13 @@ const App = () => {
   return (
     <Router>
       <div className="min-h-screen bg-gray-100">
+          
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/room/:roomId" element={<Room />} />
         </Routes>
       </div>
+        
     </Router>
   );
 };

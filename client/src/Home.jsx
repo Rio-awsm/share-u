@@ -1,98 +1,112 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { nanoid } from 'nanoid';
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import GlobeComponent from "./components/GlobeComponent"
+import Clock from "./components/Clock"
+import logo from "/logo.svg"
+
 
 const Home = () => {
-  const [username, setUsername] = useState('');
-  const [roomId, setRoomId] = useState('');
-  const navigate = useNavigate();
+  const [username, setUsername] = useState("")
+  const [roomId, setRoomId] = useState("")
+  const navigate = useNavigate()
 
   const generateRoomCode = () => {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let result = '';
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    let result = ""
     for (let i = 0; i < 4; i++) {
-      result += characters.charAt(Math.floor(Math.random() * characters.length));
+      result += characters.charAt(Math.floor(Math.random() * characters.length))
     }
-    return result;
-  };
+    return result
+  }
 
   const createRoom = () => {
     if (!username) {
-      alert('Please enter your name');
-      return;
+      alert("Please enter your name")
+      return
     }
-    const newRoomId = generateRoomCode();
-    navigate(`/room/${newRoomId}`, { state: { username, isOwner: true } });
-  };
+    const newRoomId = generateRoomCode()
+    navigate(`/room/${newRoomId}`, { state: { username, isOwner: true } })
+  }
 
   const joinRoom = () => {
     if (!username) {
-      alert('Please enter your name');
-      return;
+      alert("Please enter your name")
+      return
     }
     if (!roomId) {
-      alert('Please enter a room code');
-      return;
+      alert("Please enter a room code")
+      return
     }
-    navigate(`/room/${roomId.toUpperCase()}`, { state: { username, isOwner: false } });
-  };
+    navigate(`/room/${roomId.toUpperCase()}`, { state: { username, isOwner: false } })
+  }
 
   const handleRoomIdChange = (e) => {
-    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
-    setRoomId(value);
-  };
+    const value = e.target.value
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "")
+      .slice(0, 4)
+    setRoomId(value)
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <h1 className="text-5xl font-extrabold text-white text-center mb-8 drop-shadow-lg">
-          Share U
-        </h1>
-        <div className="bg-white rounded-3xl p-8 shadow-2xl">
-          <input
-            type="text"
-            placeholder="Your name"
-            className="w-full bg-gray-100 text-gray-800 placeholder-gray-500 border border-gray-300 rounded-full py-3 px-6 mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <button
-            onClick={createRoom}
-            className="w-full bg-blue-600 text-white font-semibold rounded-full py-3 px-6 mb-6 hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-          >
-            Create New Room
-          </button>
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500">or join existing</span>
-            </div>
+    <section className=" bg-black text-white relative bg-[url('/bg.svg')] -mt-2 lg:mt-0 bg-center bg-no-repeat ">
+      <div className="container mx-auto px-4 py-8 flex flex-col items-center justify-center min-h-screen">
+        
+
+        {/* Top Bar with Logo and Clock */}
+        <div className="absolute top-0 left-0 right-0 flex lg:justify-between justify-evenly lg:mx-16 items-center p p-4 sm:p-6">
+          <img src={logo || "/placeholder.svg"} alt="Logo" className="h-8 sm:h-10 md:h-12" />
+          <div className="bg- text-white border border-gray-500 px-4 py-1  rounded-full text-xs sm:text-sm">
+            <Clock />
           </div>
-          <div className="mb-6">
+        </div>
+
+        <h1 className="text-3xl sm:text-4xl font-sans md:text-5xl lg:text-6xl font-bold text-center mb-6 sm:mb-8 mt-16 sm:mt-20">
+          Connects you with | <span className="text-blue-400">yours</span>
+        </h1>
+
+        <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-10 w-full max-w-5xl">
+          {/* Form Section */}
+          <div className="bg-gradient-to-br from-[#0D0D2B] to-black border border-gray-500 p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md">
+
             <input
               type="text"
-              placeholder="Room Code (4 characters)"
-              className="w-full bg-gray-100 text-gray-800 placeholder-gray-500 border border-gray-300 rounded-full py-3 px-6 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-center uppercase tracking-widest"
+              placeholder="Your Name"
+              className="w-full bg-transparent text-white border border-gray-500 rounded-lg p-2 sm:p-3 mb-3 sm:mb-4 placeholder-gray-400"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <button
+              onClick={createRoom}
+              className="w-full bg-black text-white font-semibold rounded-lg py-2 sm:py-3 mb-3 sm:mb-4 border border-gray-500 hover:text-blue-400 transition-colors"
+            >
+              Create a new room
+            </button>
+            <p className="text-center text-gray-500 mb-3 sm:mb-4">OR</p>
+            <input
+              type="text"
+              placeholder="Room Code (4 CHARACTERS)"
+              className="w-full bg-transparent text-white border border-gray-500 rounded-lg p-2 sm:p-3 text-center uppercase"
               value={roomId}
               onChange={handleRoomIdChange}
-              maxLength={4}
             />
-            <p className="text-sm text-gray-500 text-center mt-2">
-              Enter 4-character room code
-            </p>
+            <button
+              onClick={joinRoom}
+              className="w-full bg-black text-white font-semibold rounded-lg py-2 sm:py-3 mt-3 sm:mt-4 border border-gray-500 hover:text-blue-400 transition-colors"
+            >
+              Join Room
+            </button>
           </div>
-          <button
-            onClick={joinRoom}
-            className="w-full bg-purple-600 text-white font-semibold rounded-full py-3 px-6 hover:bg-purple-700 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
-          >
-            Join Room
-          </button>
+
+          {/* Globe Section */}
+          <div className="flex justify-center  items-center w-full max-w-md lg:max-w-lg xl:max-w-xl">
+            <GlobeComponent />
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
+    </section>
+  )
+}
 
-export default Home;
+export default Home
+

@@ -251,54 +251,46 @@ export const VideoChat = ({ socket, roomId, username, canEdit }) => {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 bg-gray-900 rounded-lg shadow-xl p-4 w-64">
-      <div className="grid grid-cols-2 gap-2 mb-4">
-        <video
-          ref={localVideoRef}
-          autoPlay
-          muted
-          playsInline
-          className="w-full rounded-lg bg-gray-800"
-        />
-        {Array.from(peers.entries()).map(([userId, stream]) => (
-          <video
-            key={userId}
-            autoPlay
-            playsInline
-            className="w-full rounded-lg bg-gray-800"
-            ref={(el) => {
-              if (el) el.srcObject = stream;
-            }}
-          />
-        ))}
-      </div>
-
-      <div className="flex justify-center space-x-2">
-        <button
-          onClick={toggleAudio}
-          className={`p-2 rounded-full ${
-            isAudioEnabled ? "bg-gray-700" : "bg-red-600"
-          }`}
-        >
-          {isAudioEnabled ? <Mic size={20} /> : <MicOff size={20} />}
-        </button>
-        <button
-          onClick={toggleVideo}
-          className={`p-2 rounded-full ${
-            isVideoEnabled ? "bg-gray-700" : "bg-red-600"
-          }`}
-        >
-          {isVideoEnabled ? <Video size={20} /> : <VideoOff size={20} />}
-        </button>
-        <button
-          onClick={toggleScreenShare}
-          className={`p-2 rounded-full ${
-            isScreenSharing ? "bg-green-600" : "bg-gray-700"
-          }`}
-        >
-          <Monitor size={20} />
-        </button>
-      </div>
+    <div className=" relative rounded-xl  w-[402px] h-[238px] flex items-center justify-between">
+    {/* Video Container (50%) */}
+    <div className="w-full h-full flex items-center justify-center relative">
+      <video
+        ref={localVideoRef}
+        autoPlay
+        muted
+        playsInline
+        className="w-full h-full rounded-xl  bg-gray-800 object-cover"
+      />
     </div>
+  
+    {/* Buttons Container (50%) */}
+    <div className="absolute z bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-4">
+      <button
+        onClick={toggleAudio}
+        className={`p-3 rounded-full bg-black bg-opacity-50 text-white transition ${
+          isAudioEnabled ? "opacity-100" : "bg-red-600"
+        }`}
+      >
+        {isAudioEnabled ? <Mic size={20} /> : <MicOff size={20} />}
+      </button>
+      <button
+        onClick={toggleVideo}
+        className={`p-3 rounded-full bg-black bg-opacity-50 text-white transition ${
+          isVideoEnabled ? "opacity-100" : "bg-red-600"
+        }`}
+      >
+        {isVideoEnabled ? <Video size={20} /> : <VideoOff size={20} />}
+      </button>
+      <button
+        onClick={toggleScreenShare}
+        className={`p-3 rounded-full bg-black bg-opacity-50 text-white transition ${
+          isScreenSharing ? "bg-green-600" : "opacity-100  "
+        }`}
+      >
+        <Monitor size={20} />
+      </button>
+    </div>
+  </div>
+  
   );
 };

@@ -15,9 +15,9 @@ export const ActivePoll = ({ poll, socket, roomId, currentUserId }) => {
   const totalVotes = poll.options.reduce((sum, option) => sum + option.votes, 0);
 
   return (
-    <div className="bg-gray-800 p-4 rounded-lg mb-4">
-      <div className="flex justify-between items-start mb-4">
-        <div>
+    <div className="bg-black lg:w-[402px] p-4 rounded-3xl border-[6px] border-[#5E5A5A] mb-4">
+      <div className="flex border-[4px] border-[#5E5A5A] rounded-2xl p-4 mb-4  justify-between items-start ">
+        <div className=''>
           <h4 className="text-lg font-semibold">{poll.question}</h4>
           <p className="text-sm text-gray-400">Created by {poll.createdBy}</p>
         </div>
@@ -27,7 +27,7 @@ export const ActivePoll = ({ poll, socket, roomId, currentUserId }) => {
           </span>
         )}
       </div>
-      <div className="space-y-2">
+      <div className="space-y-3">
         {poll.options.map((option, index) => {
           const percentage = totalVotes > 0 
             ? Math.round((option.votes / totalVotes) * 100) 
@@ -39,7 +39,7 @@ export const ActivePoll = ({ poll, socket, roomId, currentUserId }) => {
               key={index}
               onClick={() => handleVote(index)}
               disabled={!poll.active}
-              className={`w-full p-2 rounded relative overflow-hidden ${
+              className={`w-full border-[4px] border-[#5E5A5A] rounded-2xl mb-2 p-4  relative overflow-hidden ${
                 poll.active 
                   ? 'hover:bg-gray-700 cursor-pointer' 
                   : 'cursor-default'
