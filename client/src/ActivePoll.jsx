@@ -15,7 +15,7 @@ export const ActivePoll = ({ poll, socket, roomId, currentUserId }) => {
   const totalVotes = poll.options.reduce((sum, option) => sum + option.votes, 0);
 
   return (
-    <div className="bg-black lg:w-[402px] p-4 rounded-3xl border-[6px] border-[#5E5A5A] mb-4">
+    <div className="bg-black z-10 lg:w-[402px] p-4 rounded-3xl border-[6px] border-[#5E5A5A] mb-4">
       <div className="flex border-[4px] border-[#5E5A5A] rounded-2xl p-4 mb-4  justify-between items-start ">
         <div className=''>
           <h4 className="text-lg font-semibold">{poll.question}</h4>

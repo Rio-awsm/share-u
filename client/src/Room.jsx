@@ -12,6 +12,7 @@ import {
   Shield,
   Loader,
   MessageCircle,
+  BarChart,
 } from "lucide-react";
 import JoinModal from "./JoinModel";
 import { ActivePoll } from "./ActivePoll";
@@ -20,6 +21,7 @@ import Chat from "./Chat";
 import { VideoChat } from "./VideoChat";
 import GenerateButton from "./components/GenerateButton";
 import Copy from "./components/Copy";
+import { BackgroundBeams } from "./components/ui/background-beams";
 
 const socket = io("https://share-u.onrender.com/");
 
@@ -200,7 +202,10 @@ const Room = () => {
   const canUseAI = isAdmin || canEdit;
 
   return (
-    <div className="min-h-screen bg-black justify-center text-white p-4">
+    <section>
+      
+    <BackgroundBeams/>
+    <div className="min-h-screen z-10 bg-black justify-center text-white p-4">
       {showJoinModal && (
         <JoinModal onJoin={handleJoinRoom} onClose={() => navigate("/")} />
       )}
@@ -218,42 +223,18 @@ const Room = () => {
               </div>
             )}
           </div>
-          <div className="flex space-x-2">
-            
-            <button
-              onClick={copyRoomLink}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition duration-300 ease-in-out flex items-center"
-            >
-              <Share2 className="mr-2" size={18} />
-              Share Room
-            </button>
-            <button
-              onClick={() => setShowUsers(!showUsers)}
-              className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-full transition duration-300 ease-in-out flex items-center"
-            >
-              <Users className="mr-2" size={18} />
-              {showUsers ? "Hide" : "Show"} Users
-            </button>
 
-            <button
-              onClick={() => setShowPollCreator(true)}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition duration-300 ease-in-out flex items-center"
-            >
-              Create Poll
-            </button>
-            <button
-              onClick={() => setShowChat(!showChat)}
-              className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-full transition duration-300 ease-in-out flex items-center"
-            >
-              <MessageCircle className="mr-2" size={18} />
-              {showChat ? "Hide" : "Show"} Chat
-            </button>
-          </div>
+
+         
+
+
+
+
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 px-[5%] py-4  justify-center">
   {/* Code Editor Section */}
-  <div className="lg:col-span-3 bg-gray-900 lg:w-[983px]  rounded-lg shadow-xl overflow-hidden">
+  <div className="lg:col-span-3 z-20 lg:w-[983px]  rounded-lg shadow-xl overflow-hidden">
     <div className="relative flex flex-col lg:flex-row lg:pt-16 pt-12">
       <AceEditor
         mode="javascript"
@@ -339,7 +320,7 @@ const Room = () => {
     <div className="  flex flex-col items-center space-y-4">
       <VideoChat socket={socket} roomId={roomId} username={location.state.username} canEdit={canEdit} />
       {showUsers && (
-        <div className="bg-black rounded-[32px] shadow-lg border-8 border-[#5E5A5A] w-[402px] text-gray-400 p-4 ">
+        <div className="bg-black z-20 rounded-[32px] shadow-lg border-8 border-[#5E5A5A] w-[402px] text-gray-400 p-4 ">
           <h2 className="text-xl p-4  text-center uppercase rounded-[32px] shadow-lg border-8 border-[#5E5A5A] font-bold  mb-4">Users</h2>
           <ul className="space-y-2">
             {users.map((user) => (
@@ -378,6 +359,49 @@ const Room = () => {
 
       </div>
     </div>
+    <div className="bg-black lg:pb-8 py-4 ">
+      {/* NAVBAR */}
+      <div className="sticky border w-fit mx-auto  transform  bg-black p-2 rounded-full shadow-lg">
+  <div className="flex items-center justify-center space-x-1">
+    <button
+      onClick={copyRoomLink}
+      className="px-6 py-3 rounded-full text-gray-300 hover:text-white transition-colors duration-200 flex items-center gap-2 hover:bg-white/10"
+    >
+      <Share2 size={18} />
+      <span>Room</span>
+    </button>
+
+    <button
+      onClick={() => setShowUsers(!showUsers)}
+      className={`px-6 py-3 rounded-full transition-colors duration-200 flex  items-center gap-2 ${
+        showUsers ? "bg-white/20 text-white" : "text-gray-300 hover:text-white hover:bg-white/10"
+      }`}
+    >
+      <Users size={18} />
+      <span>Users</span>
+    </button>
+
+    <button
+      onClick={() => setShowPollCreator(true)}
+      className="px-6 py-3 rounded-full text-gray-300 hover:text-white transition-colors duration-200 flex items-center gap-2 hover:bg-white/10"
+    >
+      <BarChart size={18} />
+      <span>Poll</span>
+    </button>
+
+    <button
+      onClick={() => setShowChat(!showChat)}
+      className={`px-6 py-3 rounded-full transition-colors duration-200 flex items-center gap-2 ${
+        showChat ? "bg-white/20 text-white" : "text-gray-300 hover:text-white hover:bg-white/10"
+      }`}
+    >
+      <MessageCircle size={18} />
+      <span>Chat</span>
+    </button>
+  </div>
+</div>
+    </div>
+    </section>
   );
 };
 

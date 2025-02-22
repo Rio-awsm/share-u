@@ -23,5 +23,19 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [addVariablesForColors],
+}
+
+function addVariablesForColors({ addBase, theme }) {
+  let allColors = theme("colors"); // ✅ FIXED
+
+  let newVars = Object.fromEntries(
+    Object.entries(allColors).flatMap(([key, val]) => 
+      typeof val === "string" ? [[`--${key}`, val]] : Object.entries(val).map(([shade, color]) => [`--${key}-${shade}`, color])
+    )
+  );
+
+  addBase({
+    ":root": newVars,
+  });
 }

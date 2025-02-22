@@ -30,7 +30,7 @@ export const PollCreator = ({ socket, roomId, onClose }) => {
   };
 
   return (
-    <div className="w-[402px] bg-black text-white rounded-3xl border-[6px] border-[#5E5A5A] p-4">
+    <div className="w-[402px] z-10 bg-black text-white rounded-3xl border-[6px] border-[#5E5A5A] p-4">
       {/* Question Input */}
       <div className="border-[4px] border-[#5E5A5A] rounded-2xl p-4 mb-4">
         <textarea
@@ -81,7 +81,7 @@ export const PollCreator = ({ socket, roomId, onClose }) => {
       )}
 
       {/* Action Buttons */}
-      <div className="flex justify-end mt-4 space-x-2">
+      <div className="flex z-10 justify-end mt-4 space-x-2">
         <button
           onClick={onClose}
           className="px-4 py-2 bg-gray-600 rounded-full hover:bg-gray-500 transition-colors"
