@@ -12,18 +12,18 @@ const JoinModal = ({ onJoin, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
+      <div className="bg-black text-white rounded-[32px] p-6 w-full max-w-md border-8 border-[#5E5A5A] relative">
         <button 
           onClick={onClose}
-          className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+          className="absolute right-4 top-4 text-gray-400 hover:text-white"
         >
           <X size={24} />
         </button>
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Join Room</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">Join Room</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="username" className="block text-gray-700 mb-2">
+            <label htmlFor="username" className="block text-gray-300 mb-2 text-sm">
               Enter your name to join
             </label>
             <input
@@ -31,14 +31,14 @@ const JoinModal = ({ onJoin, onClose }) => {
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 rounded-full border bg-black text-white border-[#5E5A5A] focus:outline-none focus:ring-2 focus:ring-[#5E5A5A] placeholder-gray-500"
               placeholder="Your name"
               autoFocus
             />
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white font-semibold rounded-lg py-2 px-4 hover:bg-blue-700 transition duration-300"
+            className="w-full bg-[#5E5A5A] text-white font-semibold rounded-full py-3 hover:bg-gray-600 transition duration-300"
             disabled={!username.trim()}
           >
             Join Room

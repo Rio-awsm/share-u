@@ -7,7 +7,7 @@ import Room from './Room';
 const App = () => {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-black">
           
         <Routes>
           <Route path="/" element={<Home />} />
